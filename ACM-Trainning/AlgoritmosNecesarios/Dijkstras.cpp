@@ -1,75 +1,57 @@
 #include <bits/stdc++.h>
 
-#define V 9
+#define X first
+#define Y second
+#define LI long long
+#define MP make_pair
+#define PB push_back
+#define SZ size()
+#define SQ(a) ((a)*(a))
+#define MAX(a,b) ((a)>(b)?(a):(b))
+#define MIN(a,b) ((a)<(b)?(a):(b))
 
+using namespace std;
 
-int minDistance(int dist[], bool sptSet[])
-{
+typedef int V;          // tipo de costes
+typedef pair<V,int> P;  // par de (coste,nodo)
+typedef set<P> S;       // conjunto de pares
 
-   int min = INT_MAX, min_index;
+int N;                  // numero de nodos
+vector<P> A[10001];     // listas adyacencia (coste,nodo)
 
-   for (int v = 0; v < V; v++)
-     if (sptSet[v] == false && dist[v] <= min)
-         min = dist[v], min_index = v;
-
-   return min_index;
+V dijkstra(int s, int t) {
+  S m;                          // cola de prioridad
+  vector<V> z(N, 1000000000);   // distancias iniciales
+  z[s] = 0;                     // distancia a s es 0
+  m.insert(MP(0, s));           // insertar (0,s) en m
+  while (m.SZ > 0) {
+    P p = *m.begin();   // p=(coste,nodo) con menor coste
+    m.erase(m.begin()); // elimina este par de m
+    if (p.Y == t) return p.X; // cuando nodo es t, acaba
+    // para cada nodo adjacente al nodo p.Y
+    for (int i = 0; i < (int)A[p.Y].SZ; i++) {
+      // q = (coste hasta nodo adjacente, nodo adjacente)
+      P q(p.X + A[p.Y][i].X, A[p.Y][i].Y);
+      // si q.X es la menor distancia hasta q.Y
+      if (q.X < z[q.Y]) {
+	m.erase(MP(z[q.Y], q.Y)); // borrar anterior
+	m.insert(q);              // insertar q
+	z[q.Y] = q.X;             // actualizar distancia
+      }
+    }
+  }
+  return -1;
 }
 
-
-int printSolution(int dist[], int n)
-{
-   printf("Vertex   Distance from Source\n");
-   for (int i = 0; i < V; i++)
-      printf("%d \t\t %d\n", i, dist[i]);
-}
-
-void dijkstra(int graph[V][V], int src)
-{
-     int dist[V];
-
-     bool sptSet[V];
-
-
-     for (int i = 0; i < V; i++)
-        dist[i] = INT_MAX, sptSet[i] = false;
-
-
-     dist[src] = 0;
-
-
-     for (int count = 0; count < V-1; count++)
-     {
-
-       int u = minDistance(dist, sptSet);
-
-
-       sptSet[u] = true;
-
-       for (int v = 0; v < V; v++)
-
-         if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX
-                                       && dist[u]+graph[u][v] < dist[v])
-            dist[v] = dist[u] + graph[u][v];
-     }
-
-     printSolution(dist, V);
-}
-
-int main()
-{
-
-   int graph[V][V] = {{0, 4, 0, 0, 0, 0, 0, 8, 0},
-                      {4, 0, 8, 0, 0, 0, 0, 11, 0},
-                      {0, 8, 0, 7, 0, 4, 0, 0, 2},
-                      {0, 0, 7, 0, 9, 14, 0, 0, 0},
-                      {0, 0, 0, 9, 0, 10, 0, 0, 0},
-                      {0, 0, 4, 0, 10, 0, 2, 0, 0},
-                      {0, 0, 0, 14, 0, 2, 0, 1, 6},
-                      {8, 11, 0, 0, 0, 0, 1, 0, 7},
-                      {0, 0, 2, 0, 0, 0, 6, 7, 0}
-                     };
-
-    dijkstra(graph, 0);
-
-    return 0;
+int main() {
+  N = 6;             // solucion 0-1-2-4-3-5, coste 11
+  A[0].PB(MP(2, 1)); // arista (0, 1) con coste 2
+  A[0].PB(MP(5, 2)); // arista (0, 2) con coste 5
+  A[1].PB(MP(2, 2)); // arista (1, 2) con coste 2
+  A[1].PB(MP(7, 3)); // arista (1, 3) con coste 7
+  A[2].PB(MP(2, 4)); // arista (2, 4) con coste 2
+  A[3].PB(MP(3, 5)); // arista (3, 5) con coste 3
+  A[4].PB(MP(2, 3)); // arista (4, 3) con coste 2
+  A[4].PB(MP(8, 5)); // arista (4, 5) con coste 8
+  cout << dijkstra(0, 5) << endl;
 }
