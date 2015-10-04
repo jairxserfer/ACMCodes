@@ -1,3 +1,11 @@
+#include <stdint.h>
+#include <string>
+#include <memory>                       // for shared_ptr<>
+#include <iostream>
+#include <deque>
+#include <map>
+#include <algorithm>                    // for lower_bound()
+
 using namespace std;
 
 class LCS {
@@ -144,12 +152,3 @@ public:
     return Select(pairs, length, false, s1, s2);
   }
 };
-
-int main(){
-  string s1, s2;
-  cin >> s1 >> s2;
-  LCS lcs;
-  auto s = lcs.Correspondence(s1,s2);
-  cout << s << endl;
-  return 0;
-}
